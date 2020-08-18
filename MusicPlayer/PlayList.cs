@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Collections;
 using WMPLib;
 using System.IO;
 using System.Text.Json;
 using System.Linq;
-using System.Web.Script.Serialization;
 
 namespace MusicPlayer
 {
@@ -22,6 +20,7 @@ namespace MusicPlayer
 
         //a list of playlists
         public static IWMPPlaylistCollection wmpPlayLists = player.playlistCollection;
+
         public IWMPPlaylist currentPlayList;
         public IWMPMedia media;
 
@@ -30,12 +29,16 @@ namespace MusicPlayer
         public Dictionary<string, string>.KeyCollection songNames;
         public Dictionary<string, string>.ValueCollection songAddresses;
 
+
+        //PARAMETER-LESS CONSTRUCTOR
         public PlayList()
         {
 
         }
+        //CONSTRUCTOR
         public PlayList(List<string> filenames, string Name = "newPlayList")
         {
+            //Adds song Name and song Address to songs
             foreach (string songName in filenames)
             {
                 songs.Add(songName, @"Playlist\" + songName);
@@ -44,14 +47,19 @@ namespace MusicPlayer
             songNames = songs.Keys;
             PlayListSongs.Add(songNames.ToList());
 
+            //initialises new playlist
             currentPlayList = wmpPlayLists.newPlaylist(Name);
             PlaylistNames.AddLast(Name);
+
+            //initialises new media objects using songAddress and adds them to the playlist
             foreach (string songAddress in songAddresses)
             {
                 media = player.newMedia(songAddress);
                 currentPlayList.appendItem(media);
             }
             PlayLists.Add(this);
+
+            //Updating all data to the Datastore, i.e., PlayListNames.json & PlayListSongs.json
             JsonSerializerOptions options = new JsonSerializerOptions
             {
                 WriteIndented = true
@@ -61,10 +69,9 @@ namespace MusicPlayer
 
             string songNamesSerial = JsonSerializer.Serialize(PlayListSongs, options);
             File.WriteAllText(@"PlayListSongs.json", songNamesSerial);
-
-            string playListsSerial = JsonSerializer.Serialize(PlayLists, options);
-            File.WriteAllText(@"Playlists.json", playListsSerial);
         }
+
+        //Plays all songs in a playlist
         public void PlaySongs(Form1 sender)
         {
             player.currentPlaylist = currentPlayList;
@@ -73,8 +80,11 @@ namespace MusicPlayer
             sender.pauseButton.Show();
         }
     }
+
+    //Class for extension method to LinkedList
     public static class LinkedListExt
     {
+        //Generic extension method used to add the functionality of finding index for LinkedList
         public static int IndexOf<T>(this LinkedList<T> list, T item)
         {
             int count = 0;

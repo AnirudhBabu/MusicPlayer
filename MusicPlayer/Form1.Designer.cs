@@ -45,6 +45,7 @@
             this.chkAutoPlay = new System.Windows.Forms.CheckBox();
             this.btnBack = new System.Windows.Forms.Button();
             this.tbCtlSongs = new System.Windows.Forms.TabControl();
+            this.btnDelete = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxMainImg)).BeginInit();
             this.SuspendLayout();
@@ -242,11 +243,22 @@
             this.tbCtlSongs.Size = new System.Drawing.Size(210, 211);
             this.tbCtlSongs.TabIndex = 16;
             // 
+            // btnDelete
+            // 
+            this.btnDelete.BackgroundImage = global::MusicPlayer.Properties.Resources.btnDelete;
+            this.btnDelete.Location = new System.Drawing.Point(449, 327);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(34, 38);
+            this.btnDelete.TabIndex = 17;
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(671, 414);
+            this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.chkAutoPlay);
             this.Controls.Add(this.txtBListHeader);
@@ -294,6 +306,7 @@
         private System.Windows.Forms.CheckBox chkAutoPlay;
         private System.Windows.Forms.Button btnBack;
         private System.Windows.Forms.TabControl tbCtlSongs;
+        private System.Windows.Forms.Button btnDelete;
     }
 }
 

@@ -1,30 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Text.Json;
-using WMPLib;
-using System.Web.Script.Serialization;
 
 namespace MusicPlayer
 {
     public partial class displayList : Form
     {
+        //used by multiple classes, hence declared as class field
+        private List<string> songAddress = new List<string>();
+
         public displayList()
         {
             InitializeComponent();
         }
 
+        //Updates main form and redirects to it
         private void btnRedirect_Click(object sender, EventArgs e)
         {
+            if (txtPlaylistName.Text == "")
+            {
+                MessageBox.Show("Please enter a valid playlist Name", "Invalid Name");
+            }
+            else
+            {
+                List<string> filenames = new List<string>();
+                string fileAddress = "";
+                for (int i = 0; i < newPlayList.Items.Count; ++i)
+                {
+                    fileAddress = songAddress[i];
+                    filenames.Add(fileAddress.Substring(fileAddress.LastIndexOf('\\') + 1));
+                    File.Copy(fileAddress, @"PlayList\" + filenames[i], true);
+                }
+                PlayList newlyCreated = new PlayList(filenames, txtPlaylistName.Text);
+                Program.musicplayer.playListItems_Refresh(sender);
+            }
+
             this.Hide();
             Program.musicplayer.Show();
+            newPlayList.Items.Clear();
+            SelectSongs.Items.Clear();
+            txtPlaylistName.Clear();
         }
       
         private void newListBtn_Click(object sender, EventArgs e)
@@ -36,14 +53,13 @@ namespace MusicPlayer
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     string[] Selected = ofd.FileNames;
-                    SelectSongs.Items.AddRange(Selected);
+                    songAddress.AddRange(Selected);
+                    foreach (string address in Selected)
+                    {
+                        SelectSongs.Items.Add(address.Substring(address.LastIndexOf("\\") + 1));
+                    }                    
                 }
             }
-        }
-
-        private void exitBtn_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
         }
 
         private void addBtn_Click(object sender, EventArgs e)
@@ -54,29 +70,35 @@ namespace MusicPlayer
                 newPlayList.Items.Add(item);
             }
         }
-        private void txtPlaylistName_Enter(object sender, KeyPressEventArgs e)
+        
+        private void displayList_Load(object sender, EventArgs e)
         {
-            if (e.KeyChar == (char)Keys.Enter)
+            txtPlaylistName.Text = "Playlist name";
+            txtPlaylistName.ForeColor = Color.Gray;
+        }
+
+        private void txtPlaylistName_Enter(object sender, EventArgs e)
+        {
+            TextBox sent = (TextBox)sender;
+            if (sent.Text == "Playlist name")
             {
-                if (txtPlaylistName.Text == "")
-                {
-                    MessageBox.Show("Please enter a valid playlist Name", "Invalid Name");
-                }
-                else
-                {
-                    List<string> filenames = new List<string>();
-                    string fileAddress = "";
-                    for(int i = 0; i < newPlayList.Items.Count; ++i)
-                    {
-                        fileAddress = newPlayList.GetItemText(newPlayList.Items[i]);
-                        filenames.Add(fileAddress.Substring(fileAddress.LastIndexOf('\\') + 1));
-                        File.Copy(fileAddress, @"PlayList\" + filenames[i], true);
-                    }
-                    PlayList newlyCreated = new PlayList(filenames, txtPlaylistName.Text);
-                    Program.musicplayer.playListItems_Refresh(sender);
-                }
+                sent.Text = "";
+                txtPlaylistName.ForeColor = Color.Black;
             }
-               
+        }
+        private void txtPlaylistName_Leave(object sender, EventArgs e)
+        {
+            if (txtPlaylistName.Text == "")
+            {
+                txtPlaylistName.Text = "Playlist name";
+                txtPlaylistName.ForeColor = Color.Gray;
+            }
+        }
+
+        //Exit app
+        private void exitBtn_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

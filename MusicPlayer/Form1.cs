@@ -11,21 +11,52 @@ namespace MusicPlayer
 {
     public partial class Form1 : Form
     {
+        //creating the control that plays, stops, pauses music
         public static WindowsMediaPlayer wplayer = new WindowsMediaPlayer();
-        private PlayList currObj;
 
+        //declared as class variables as they are used in multiple methods
+        private PlayList currObj;
+        private List<ListBox> songNameLists;
+
+
+        //CONSTRUCTOR
         public Form1()
         {
             Thread t = new Thread(new ThreadStart(StartForm));
             t.Start();
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
             InitializeComponent();
             t.Abort();
         }
         public void StartForm()
         {
+            //Starts the app with the splashscreen set to display for 3000 ms = 3 s
             Application.Run(new SplashScreen());
         }
+        public void Form1_Load(object sender, EventArgs e)
+        {
+            //loading startup data from the corresponding files
+            string deserialNames = File.ReadAllText(@"PlayListNames.json");
+            List<string> namesList = JsonSerializer.Deserialize<List<string>>(deserialNames);
+
+            string deserialSongs = File.ReadAllText(@"PlayListSongs.json");
+            List<List<string>> songsList = JsonSerializer.Deserialize<List<List<string>>>(deserialSongs);
+
+            PlayList playList1;
+            //creates object as required from the read data
+            for (int i = 0; i < namesList.Count; ++i)
+            {
+                playList1 = new PlayList(songsList[i], namesList[i]);
+            }
+            //adding playlist names to the 'Playlists' view
+            playListItems.Items.AddRange(PlayList.PlaylistNames.ToArray());
+
+            //Hidden as they are only needed in 'Tab' view
+            chkAutoPlay.Hide();
+            tbCtlSongs.Hide();
+            btnBack.Hide();
+        }
+
         private void importMusicButton_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -40,6 +71,8 @@ namespace MusicPlayer
             }
         }
 
+
+        //MUSIC CONTROLS
         public void playButton_Click(object sender, EventArgs e)
         {
             wplayer.controls.play();
@@ -50,11 +83,6 @@ namespace MusicPlayer
         private void stopButton_Click(object sender, EventArgs e)
         {
             wplayer.controls.stop();
-        }
-
-        private void x_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
         }
 
         private void fastForwardButton_Click(object sender, EventArgs e)
@@ -74,18 +102,27 @@ namespace MusicPlayer
             playButton.Show();
         }
 
+        //Redirects to the Second Form
         private void btnRedirect_Click(object sender, EventArgs e)
         {
             Program.playlist.Show();
             Program.musicplayer.Hide();
         }
 
+        //ACTIVATION OF 'TAB' VIEW AND ADDITION OF TABPAGES, LISTBOXES IN TABPAGES
+        //PROGRAMMATICALLY
         private void playListItems_DoubleClick(object sender, EventArgs e)
         {
+            //Hiding 'Playlists' view
             playListItems.Hide();
 
+            //Casting sender 'playListItems' to the appropriate type
             ListBox sent = (ListBox)sender;
+
+            //Getting the names of playlists
             List<string> playListNames = new List<string>();
+
+            //Catches exception when PlaylistNames is empty
             try
             {
                 playListNames = PlayList.PlaylistNames.ToList();                
@@ -94,37 +131,39 @@ namespace MusicPlayer
             {
                 return;
             }
-            PlayList currPlayList = PlayList.PlayLists[PlayList.PlaylistNames.IndexOf(playListNames[sent.SelectedIndex])];
-            currObj = PlayList.PlayLists[PlayList.PlaylistNames.IndexOf(playListNames[sent.SelectedIndex])];
 
-            List<ListBox> songNameLists = new List<ListBox>();
+            //gets the PlayList object to be referred to using the index of the selection
+            //from playListItems
+            PlayList currPlayList = PlayList.PlayLists[sent.SelectedIndex];
+            currObj = PlayList.PlayLists[sent.SelectedIndex];
+
+            //initialises a list of listboxes to be added to the tabpages being created
+            songNameLists = new List<ListBox>();
+
+            //creates Tabpages and Listboxes to be added to those tabpages
             for (int i = 0; i < playListItems.Items.Count; ++i)
             {
                 songNameLists.Add(new ListBox());
 
                 TabPage myTabPage = new TabPage();
                 tbCtlSongs.TabPages.Add(myTabPage);
-
-                tbCtlSongs.TabPages[i].Controls.Add(songNameLists[i]);
-            }
-            for(int i = 0; i < tbCtlSongs.TabPages.Count; ++i)
-            {
-                tbCtlSongs.TabPages[i].Click += new EventHandler(this.tabPage_Click);
                 tbCtlSongs.TabPages[i].Text = playListNames[i];
 
+                tbCtlSongs.TabPages[i].Controls.Add(songNameLists[i]);
+
+                //Determines the selected tab
                 if (tbCtlSongs.TabPages[i].Text == sent.GetItemText(sent.SelectedItem))
                 {
                     tbCtlSongs.SelectedTab = tbCtlSongs.TabPages[i];
                 }
-                             
-            }
-            tbCtlSongs.Show();
-            for (int i = 0; i < PlayList.PlayLists.Count; ++i)
-            {
+
+                //Adds songs to listboxes created
                 songNameLists[i].Items.AddRange(PlayList.PlayLists[i].songNames.ToArray());
                 songNameLists[i].DoubleClick += new EventHandler(this.songsList_DoubleClick);
                 songNameLists[i].Size = tbCtlSongs.TabPages[i].Size;
             }
+
+            tbCtlSongs.Show();
             chkAutoPlay.Show();
             btnBack.Show();
 
@@ -133,6 +172,8 @@ namespace MusicPlayer
 
             playListItems.Items.Clear();
             playListItems.Items.AddRange(PlayList.PlaylistNames.ToArray());
+
+            //Plays songs in Playlist
             chkAutoPlay.Checked = true;
             if (chkAutoPlay.Checked)
             {
@@ -140,34 +181,21 @@ namespace MusicPlayer
             }
         }
 
-        public void Form1_Load(object sender, EventArgs e)
-        {
-            string deserialNames = File.ReadAllText(@"PlayListNames.json");
-            List<string> namesList = JsonSerializer.Deserialize<List<string>>(deserialNames);
-                        
-            string deserialSongs = File.ReadAllText(@"PlayListSongs.json");
-            List<List<string>> songsList = JsonSerializer.Deserialize<List<List<string>>>(deserialSongs);
-            PlayList playList1;
-            for (int i = 0; i < namesList.Count; ++i)
-            {
-                playList1 = new PlayList(songsList[i], namesList[i]);
-            }
-            playListItems.Items.AddRange(PlayList.PlaylistNames.ToArray());
-            chkAutoPlay.Hide();
-            tbCtlSongs.Hide();
-            btnBack.Hide();
-        }
-
         private void songsList_DoubleClick(object sender, EventArgs e)
         {
             //converts the sender to the needed type
             ListBox sent = (ListBox)sender;
+            
+            //Sets the address for the player based on the songName clicked
             wplayer.URL = @"Playlist\" + sent.SelectedItem.ToString();
             wplayer.controls.play();
             playButton.Hide();
             pauseButton.Show();
         }
 
+
+        //CHANGES THE PLAYLIST TO BE PLAYED IF THE USER UNCHECKS AND CHECKS AUTOPLAY AFTER
+        //CHANGING TO A DIFFERENT TAB
         private void chkAutoPlay_CheckedChanged(object sender, EventArgs e)
         {
             if (!chkAutoPlay.Checked)
@@ -182,22 +210,12 @@ namespace MusicPlayer
             }
         }
 
-        private void tabPage_Click(object sender, EventArgs e)
-        {
-            TabPage sent = (TabPage)sender;
-            
-            PlayList currPlayList = PlayList.PlayLists[PlayList.PlaylistNames.IndexOf(sent.Text)];
-            sent.Select();
-            wplayer.currentPlaylist = currPlayList.currentPlayList;
-            wplayer.controls.play();
-            playButton.Hide();
-            pauseButton.Show();
-        }
+        //Adds the newly created playlist to 'Playlists' view
         public void playListItems_Refresh(object sender)
-        {
-            TextBox sent = (TextBox)sender;
-            playListItems.Items.Add(sent.Text);
+        {            
+            playListItems.Items.Add(Program.playlist.txtPlaylistName.Text);
         }
+
         private void btnBack_Click(object sender, EventArgs e)
         {
             btnBack.Hide();
@@ -209,6 +227,56 @@ namespace MusicPlayer
                 tbCtlSongs.TabPages.Remove(tabPage);
             }
             stopButton_Click(sender, e);
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            int i;
+            //If in 'PlayLists' view, delete Playlist
+            if (playListItems.Visible)
+            {
+                i = playListItems.SelectedIndex;
+                PlayList.PlayLists.Remove(PlayList.PlayLists.ElementAt(i));
+                PlayList.PlayListSongs.Remove(PlayList.PlayListSongs.ElementAt(i));
+                PlayList.PlaylistNames.Remove(playListItems.SelectedItem.ToString());
+                playListItems.Items.Clear();
+                playListItems.Items.AddRange(PlayList.PlaylistNames.ToArray());
+            }
+            //If in tab view, delete selected song from Playlist
+            else if (tbCtlSongs.Visible)
+            {
+                i = tbCtlSongs.SelectedIndex;
+                File.WriteAllText(@"selectedTabNum.txt", i.ToString());
+                PlayList.PlayListSongs[i].Remove(songNameLists[i].SelectedItem.ToString());
+                currObj.songs.Remove(songNameLists[i].SelectedItem.ToString());
+                tbCtlSongs.SelectedTab.Controls.Remove(songNameLists[i]);
+                songNameLists[i].Items.Clear();
+                songNameLists[i].Items.AddRange(PlayList.PlayLists[i].songNames.ToArray());
+                tbCtlSongs.SelectedTab.Controls.Add(songNameLists[i]);                
+            }
+
+
+            //Update data in datastore, i.e. PlayListNames.json & PlayListSongs.json
+            LinkedList<string> PlaylistNames = PlayList.PlaylistNames;
+            List<List<string>> PlayListSongs = PlayList.PlayListSongs;
+
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
+            string playListNamesSerial = JsonSerializer.Serialize(PlaylistNames, options);
+            File.WriteAllText(@"PlayListNames.json", playListNamesSerial);
+
+            string songNamesSerial = JsonSerializer.Serialize(PlayListSongs, options);
+            File.WriteAllText(@"PlayListSongs.json", songNamesSerial);
+        }
+
+
+        //Exit App
+        private void x_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

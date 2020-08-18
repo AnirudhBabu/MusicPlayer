@@ -44,9 +44,9 @@
             // SelectSongs
             // 
             this.SelectSongs.FormattingEnabled = true;
-            this.SelectSongs.Location = new System.Drawing.Point(77, 112);
+            this.SelectSongs.Location = new System.Drawing.Point(43, 132);
             this.SelectSongs.Name = "SelectSongs";
-            this.SelectSongs.Size = new System.Drawing.Size(176, 188);
+            this.SelectSongs.Size = new System.Drawing.Size(228, 257);
             this.SelectSongs.TabIndex = 0;
             // 
             // lblHeader2
@@ -66,9 +66,9 @@
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(65)))), ((int)(((byte)(97)))));
             this.panel1.Controls.Add(this.exitBtn);
             this.panel1.Controls.Add(this.lblHeader2);
-            this.panel1.Location = new System.Drawing.Point(-1, 0);
+            this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(712, 62);
+            this.panel1.Size = new System.Drawing.Size(713, 62);
             this.panel1.TabIndex = 2;
             // 
             // exitBtn
@@ -90,9 +90,9 @@
             // 
             this.newPlayList.FormattingEnabled = true;
             this.newPlayList.ItemHeight = 20;
-            this.newPlayList.Location = new System.Drawing.Point(464, 112);
+            this.newPlayList.Location = new System.Drawing.Point(432, 132);
             this.newPlayList.Name = "newPlayList";
-            this.newPlayList.Size = new System.Drawing.Size(158, 184);
+            this.newPlayList.Size = new System.Drawing.Size(228, 244);
             this.newPlayList.TabIndex = 3;
             // 
             // btnRedirect
@@ -102,9 +102,9 @@
             this.btnRedirect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRedirect.Font = new System.Drawing.Font("Century Gothic", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRedirect.ForeColor = System.Drawing.Color.White;
-            this.btnRedirect.Location = new System.Drawing.Point(464, 322);
+            this.btnRedirect.Location = new System.Drawing.Point(462, 381);
             this.btnRedirect.Name = "btnRedirect";
-            this.btnRedirect.Size = new System.Drawing.Size(158, 38);
+            this.btnRedirect.Size = new System.Drawing.Size(168, 38);
             this.btnRedirect.TabIndex = 10;
             this.btnRedirect.Text = "Go Back";
             this.btnRedirect.UseVisualStyleBackColor = false;
@@ -117,7 +117,7 @@
             this.newListBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.newListBtn.Font = new System.Drawing.Font("Century Gothic", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.newListBtn.ForeColor = System.Drawing.Color.White;
-            this.newListBtn.Location = new System.Drawing.Point(77, 322);
+            this.newListBtn.Location = new System.Drawing.Point(73, 381);
             this.newListBtn.Name = "newListBtn";
             this.newListBtn.Size = new System.Drawing.Size(168, 38);
             this.newListBtn.TabIndex = 11;
@@ -132,7 +132,7 @@
             this.addBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.addBtn.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.addBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(65)))), ((int)(((byte)(97)))));
-            this.addBtn.Location = new System.Drawing.Point(314, 187);
+            this.addBtn.Location = new System.Drawing.Point(302, 233);
             this.addBtn.Name = "addBtn";
             this.addBtn.Size = new System.Drawing.Size(98, 40);
             this.addBtn.TabIndex = 12;
@@ -142,11 +142,12 @@
             // 
             // txtPlaylistName
             // 
-            this.txtPlaylistName.Location = new System.Drawing.Point(464, 80);
+            this.txtPlaylistName.Location = new System.Drawing.Point(454, 100);
             this.txtPlaylistName.Name = "txtPlaylistName";
-            this.txtPlaylistName.Size = new System.Drawing.Size(158, 26);
+            this.txtPlaylistName.Size = new System.Drawing.Size(176, 26);
             this.txtPlaylistName.TabIndex = 13;
-            this.txtPlaylistName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtPlaylistName_Enter);
+            this.txtPlaylistName.Enter += new System.EventHandler(this.txtPlaylistName_Enter);
+            this.txtPlaylistName.Leave += new System.EventHandler(this.txtPlaylistName_Leave);
             // 
             // displayList
             // 
@@ -165,6 +166,7 @@
             this.Name = "displayList";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "displayList";
+            this.Load += new System.EventHandler(this.displayList_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -182,6 +184,6 @@
         private System.Windows.Forms.Button newListBtn;
         private System.Windows.Forms.Button exitBtn;
         private System.Windows.Forms.Button addBtn;
-        private System.Windows.Forms.TextBox txtPlaylistName;
+        public System.Windows.Forms.TextBox txtPlaylistName;
     }
 }
