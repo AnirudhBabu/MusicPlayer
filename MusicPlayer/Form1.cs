@@ -83,6 +83,8 @@ namespace MusicPlayer
         private void stopButton_Click(object sender, EventArgs e)
         {
             wplayer.controls.stop();
+            pauseButton.Hide();
+            playButton.Show();
         }
 
         private void fastForwardButton_Click(object sender, EventArgs e)
@@ -219,6 +221,7 @@ namespace MusicPlayer
         private void btnBack_Click(object sender, EventArgs e)
         {
             btnBack.Hide();
+            chkAutoPlay.Hide();
             tbCtlSongs.Hide();
             txtBListHeader.Text = "Playlists";
             playListItems.Show();

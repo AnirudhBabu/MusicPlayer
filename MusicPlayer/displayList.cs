@@ -19,7 +19,7 @@ namespace MusicPlayer
         //Updates main form and redirects to it
         private void btnRedirect_Click(object sender, EventArgs e)
         {
-            if (txtPlaylistName.Text == "")
+            if (txtPlaylistName.Text == "" || txtPlaylistName.Text == "Playlist name")
             {
                 MessageBox.Show("Please enter a valid playlist Name", "Invalid Name");
             }
