@@ -113,11 +113,6 @@ namespace MusicPlayer
         //PROGRAMMATICALLY
         private void playListItems_DoubleClick(object sender, EventArgs e)
         {
-            //Hiding 'Playlists' view
-            playListItems.Hide();
-
-            //Casting sender 'playListItems' to the appropriate type
-            ListBox sent = (ListBox)sender;
 
             //Getting the names of playlists
             List<string> playListNames = new List<string>();
@@ -132,52 +127,62 @@ namespace MusicPlayer
                 return;
             }
 
+            //Casting sender 'playListItems' to the appropriate type
+            ListBox sent = (ListBox)sender;
+
             //gets the PlayList object to be referred to using the index of the selection
             //from playListItems
-            PlayList currPlayList = PlayList.PlayLists[sent.SelectedIndex];
-            currObj = PlayList.PlayLists[sent.SelectedIndex];
+            int playListNum = sent.SelectedIndex;
+            PlayList currPlayList = playListNum >= 0 ? PlayList.PlayLists[playListNum] : null;
+            currObj = playListNum >= 0 ? PlayList.PlayLists[playListNum]: null;
 
             //initialises a list of listboxes to be added to the tabpages being created
             songNameLists = new List<ListBox>();
 
             //creates Tabpages and Listboxes to be added to those tabpages
-            for (int i = 0; i < playListItems.Items.Count; ++i)
+            if(currObj != null)
             {
-                songNameLists.Add(new ListBox());
 
-                TabPage myTabPage = new TabPage();
-                tbCtlSongs.TabPages.Add(myTabPage);
-                tbCtlSongs.TabPages[i].Text = playListNames[i];
-
-                tbCtlSongs.TabPages[i].Controls.Add(songNameLists[i]);
-
-                //Determines the selected tab
-                if (tbCtlSongs.TabPages[i].Text == sent.GetItemText(sent.SelectedItem))
+                //Hiding 'Playlists' view
+                playListItems.Hide();
+                for (int i = 0; i < playListItems.Items.Count; ++i)
                 {
-                    tbCtlSongs.SelectedTab = tbCtlSongs.TabPages[i];
+                    songNameLists.Add(new ListBox());
+
+                    TabPage playListTab = new TabPage();
+                    tbCtlSongs.TabPages.Add(playListTab);
+                    tbCtlSongs.TabPages[i].Text = playListNames[i];
+
+                    tbCtlSongs.TabPages[i].Controls.Add(songNameLists[i]);
+
+                    //Determines the selected tab
+                    if (tbCtlSongs.TabPages[i].Text == sent.GetItemText(sent.SelectedItem))
+                    {
+                        tbCtlSongs.SelectedTab = tbCtlSongs.TabPages[i];
+                    }
+
+                    //Adds songs to listboxes created
+                    songNameLists[i].Items.AddRange(PlayList.PlayLists[i].songNames.ToArray());
+                    songNameLists[i].DoubleClick += new EventHandler(this.songsList_DoubleClick);
+                    songNameLists[i].Size = tbCtlSongs.TabPages[i].Size;
                 }
 
-                //Adds songs to listboxes created
-                songNameLists[i].Items.AddRange(PlayList.PlayLists[i].songNames.ToArray());
-                songNameLists[i].DoubleClick += new EventHandler(this.songsList_DoubleClick);
-                songNameLists[i].Size = tbCtlSongs.TabPages[i].Size;
-            }
+                tbCtlSongs.Show();
+                chkAutoPlay.Show();
+                btnBack.Show();
 
-            tbCtlSongs.Show();
-            chkAutoPlay.Show();
-            btnBack.Show();
+                txtBListHeader.Text = "Tab view";
+                txtBListHeader.ReadOnly = true;
 
-            txtBListHeader.Text = "Tab view";
-            txtBListHeader.ReadOnly = true;
+                playListItems.Items.Clear();
+                playListItems.Items.AddRange(PlayList.PlaylistNames.ToArray());
 
-            playListItems.Items.Clear();
-            playListItems.Items.AddRange(PlayList.PlaylistNames.ToArray());
-
-            //Plays songs in Playlist
-            chkAutoPlay.Checked = true;
-            if (chkAutoPlay.Checked)
-            {
-                currObj.PlaySongs(this);
+                //Plays songs in Playlist
+                chkAutoPlay.Checked = true;
+                if (chkAutoPlay.Checked)
+                {
+                    currObj.PlaySongs(this);
+                }
             }
         }
 
