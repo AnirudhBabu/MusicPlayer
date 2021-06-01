@@ -8,4 +8,5 @@ It makes use of JSON serialization and deserialization for data persistence (pla
 
 ## Credits
 Aakriti Gupta - UI Designer
+
 Nahia Akter - Contributor
