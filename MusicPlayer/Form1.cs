@@ -35,21 +35,25 @@ namespace MusicPlayer
         }
         public void Form1_Load(object sender, EventArgs e)
         {
-            //loading startup data from the corresponding files
-            string deserialNames = File.ReadAllText(@"PlayListNames.json");
-            List<string> namesList = JsonSerializer.Deserialize<List<string>>(deserialNames);
-
-            string deserialSongs = File.ReadAllText(@"PlayListSongs.json");
-            List<List<string>> songsList = JsonSerializer.Deserialize<List<List<string>>>(deserialSongs);
-
-            PlayList playList1;
-            //creates object as required from the read data
-            for (int i = 0; i < namesList.Count; ++i)
+            try
             {
-                playList1 = new PlayList(songsList[i], namesList[i]);
+                //loading startup data from the corresponding files
+                string deserialNames = File.ReadAllText(@"PlayListNames.json");
+                List<string> namesList = JsonSerializer.Deserialize<List<string>>(deserialNames);
+
+                string deserialSongs = File.ReadAllText(@"PlayListSongs.json");
+                List<List<string>> songsList = JsonSerializer.Deserialize<List<List<string>>>(deserialSongs);
+
+                PlayList playList1;
+                //creates object as required from the read data
+                for (int i = 0; i < namesList.Count; ++i)
+                {
+                    playList1 = new PlayList(songsList[i], namesList[i]);
+                }
+                //adding playlist names to the 'Playlists' view
+                playListItems.Items.AddRange(PlayList.PlaylistNames.ToArray());
             }
-            //adding playlist names to the 'Playlists' view
-            playListItems.Items.AddRange(PlayList.PlaylistNames.ToArray());
+            catch (IOException) { }
 
             //Hidden as they are only needed in 'Tab' view
             chkAutoPlay.Hide();
@@ -255,12 +259,14 @@ namespace MusicPlayer
             {
                 i = tbCtlSongs.SelectedIndex;
                 File.WriteAllText(@"selectedTabNum.txt", i.ToString());
+                File.Delete(@"PlayList\" + songNameLists[i].SelectedItem.ToString());
                 PlayList.PlayListSongs[i].Remove(songNameLists[i].SelectedItem.ToString());
                 currObj.songs.Remove(songNameLists[i].SelectedItem.ToString());
                 tbCtlSongs.SelectedTab.Controls.Remove(songNameLists[i]);
                 songNameLists[i].Items.Clear();
+                
                 songNameLists[i].Items.AddRange(PlayList.PlayLists[i].songNames.ToArray());
-                tbCtlSongs.SelectedTab.Controls.Add(songNameLists[i]);                
+                tbCtlSongs.SelectedTab.Controls.Add(songNameLists[i]);     
             }
 
 

@@ -3,6 +3,7 @@ using WMPLib;
 using System.IO;
 using System.Text.Json;
 using System.Linq;
+using System.Text.Encodings.Web;
 
 namespace MusicPlayer
 {
@@ -64,6 +65,7 @@ namespace MusicPlayer
             {
                 WriteIndented = true
             };
+
             string playListNamesSerial = JsonSerializer.Serialize(PlaylistNames, options);
             File.WriteAllText(@"PlayListNames.json", playListNamesSerial);
 

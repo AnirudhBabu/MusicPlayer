@@ -32,6 +32,10 @@ namespace MusicPlayer
                 {
                     fileAddress = songAddress[i];
                     filenames.Add(fileAddress.Substring(fileAddress.LastIndexOf('\\') + 1));
+                    if(!Directory.Exists(@"PlayList"))
+                    {
+                        Directory.CreateDirectory(@"PlayList");            
+                    }
                     File.Copy(fileAddress, @"PlayList\" + filenames[i], true);
                 }
                 PlayList newlyCreated = new PlayList(filenames, txtPlaylistName.Text);
